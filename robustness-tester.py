@@ -21,15 +21,27 @@ APPLICATIONS = {
         # Python application checked for SIGKILL and the
         # proper handling of thereof. Or third party applications
         # like avahi
-        "sigkill-able" : [
+        "sigkill" : [
             "foo",
             "bar"
         ],
         # C lang applications are memory checked
         # and SIGTERM MUST be implemented.
-        "sigterm-able" : [
+        "sigterm" : [
             "foo",
             "bar"
+        ],
+
+        # ok, ptrace(ATTACH, ...) to the application, wait
+        # until the application is really stop (must be runable
+        # before it can be stopped) and block the application.
+        # Wait until n seconds. After this, ptrace(DETACH, ...)
+        # is called. Normally, the detach does not matter, because
+        # SystemD watchdog will kill the process during stop (attach)
+        # state and restart the application.
+        # If no process is listed in the ptrace-stop list, all processes
+        # are stopped enfored (ptrace), except pid 1
+        'ptrace-stop' : [
         ]
 }
 
@@ -111,7 +123,7 @@ def check_sigterm() -> None:
     should not show up
     """
     log('Test Suite: Sigterm Checks')
-    for application in applications_shuffled('sigterm-able'):
+    for application in applications_shuffled('sigterm'):
         log('next checked application: "{}"'.format(application))
         pids = pids_by_process_name(application)
         if not pids:
@@ -154,7 +166,7 @@ def check_sigkill() -> None:
     """ Iterate over all C Programms and send SIGKILL
     """
     log('Test Suite: Sigkill Checks')
-    for application in applications_shuffled('sigkill-able') + applications_shuffled('sigterm-able'):
+    for application in applications_shuffled('sigkill') + applications_shuffled('sigterm'):
         log('Next checked application: "{}"'.format(application))
         pids = pids_by_process_name(application)
         if not pids:
@@ -187,9 +199,9 @@ def check_sigkill() -> None:
 def print_agenda():
     log('Robustness-Tester started')
     log('Test order: 1) sigterm check suite, 2) sigkill check suite')
-    sigterm_apps = ', '.join(APPLICATIONS['sigterm-able'])
+    sigterm_apps = ', '.join(APPLICATIONS['sigterm'])
     log('Sigterm applications (order randomized): {}'.format(sigterm_apps))
-    sigkill_apps = ', '.join(APPLICATIONS['sigkill-able'] + APPLICATIONS['sigterm-able'])
+    sigkill_apps = ', '.join(APPLICATIONS['sigkill'] + APPLICATIONS['sigterm'])
     log('Sigkill applications (order randomized, inkludes sigterm apps): {}'.format(sigkill_apps))
 
 def main():
