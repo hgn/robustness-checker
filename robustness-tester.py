@@ -316,6 +316,8 @@ def print_agenda():
     log('Sigterm applications (order randomized): {}'.format(sigterm_apps))
     sigkill_apps = ', '.join(APPLICATIONS['sigkill'] + APPLICATIONS['sigterm'])
     log('Sigkill applications (order randomized, inkludes sigterm apps): {}'.format(sigkill_apps))
+    ptrace_stop_apps = ', '.join(APPLICATIONS['ptrace-stop'])
+    log('Ptrace-stop applications (order randomized): {}'.format(ptrace_stop_apps))
 
 def main(args):
     print_agenda()
