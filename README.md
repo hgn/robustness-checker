@@ -6,6 +6,21 @@ by the user. Not every application react properly to SIGTERM. Other applications
 are required to do so. If compiled with `-fsanitize=leak` and SIGTERM frees all memory
 after this 'Robustness Tester' should catch such errors.
 
+# Minimal Python
+
+This programs requires no external library, just because getting third party
+packages cross compiled for embedded platforms is somehow tricky (no psutils).
+This script uses ctype, if some exception occur - please read the comments in
+the source code above the exception.
+
+# Note: Beware of Usage
+
+This programs heavily kills (sigterm, sigkill) and ptraces to processes. Due to
+the mature of how Linux works (better UNIX), using the PID as an process
+identificator is not clean, rather it is racy to some degree. I wait for a new
+linux syscall where this gap is closed: `pidfd_open()`. But until this is not
+yet mainline, it is the only choice.
+
 # Usage
 
 ## Define application list on top of robustness-tester.py
