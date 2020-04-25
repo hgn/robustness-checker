@@ -7,6 +7,7 @@ import signal
 import subprocess
 import datetime
 import random
+import argparse
 import systemd
 import systemd.journal
 
@@ -204,16 +205,30 @@ def print_agenda():
     sigkill_apps = ', '.join(APPLICATIONS['sigkill'] + APPLICATIONS['sigterm'])
     log('Sigkill applications (order randomized, inkludes sigterm apps): {}'.format(sigkill_apps))
 
-def main():
+def main(args):
     print_agenda()
     while (True):
-        check_sigterm()
-        check_sigkill()
+        if not args.disable_sigterm:
+            check_sigterm()
+        if not args.disable_sigkill:
+            check_sigkill()
         log("Sleeping for {} seconds until the next major test run".format(SLEEP_CHECK_INTERVAL))
         time.sleep(SLEEP_CHECK_INTERVAL)
 
 
 if __name__ == "__main__":
-    main()
+    p = argparse.ArgumentParser()
+    p.add_argument("--disable-sigterm",
+                   action="store_true",
+                   help="disable sigterm checks")
+    p.add_argument("--disable-sigkill",
+                   action="store_true",
+                   help="disable sigkill checks")
+    p.add_argument("--disable-ptrace-stop",
+                   action="store_true",
+                   help="disable ptrace stop checks")
+    args = p.parse_args()
+    print(args)
+    main(args)
 
 
