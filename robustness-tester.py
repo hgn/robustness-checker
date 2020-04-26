@@ -267,7 +267,7 @@ def ptrace_stop_wait_until_killed(application: str, pid: int) -> bool:
         msg = 'Wait additional {} seconds'
         log(msg.format((iterations * sleeptime) - (probe * sleeptime)))
         # we check every 5 seconds, just to avoid flooding the journal
-        time.sleep(5)
+        time.sleep(sleeptime)
     return False
 
 
