@@ -56,7 +56,7 @@ APPLICATIONS = {
         # If no process is listed in the ptrace-stop list, all processes
         # are stopped enfored (ptrace), except pid 1
         'ptrace-stop' : [
-            "foo"
+            "runner"
         ]
 }
 
@@ -253,7 +253,7 @@ def ptrace_stop_wait_until_killed(application: str, pid: int) -> bool:
     sleeptime = 5
     msg = "Wait {} seconds until application is restarted"
     log(msg.format(iterations * sleeptime))
-    for probe in range(100):
+    for probe in range(iterations):
         if not pid_alive(pid):
             msg = 'Application "{}" with pid:{} not alive - seems to be restarted'
             log(msg.format(application, pid))
@@ -264,6 +264,8 @@ def ptrace_stop_wait_until_killed(application: str, pid: int) -> bool:
             return True
         msg = 'Application "{}" with pid:{} still alive and ptrace attached stopped!'
         log(msg.format(application, pid))
+        msg = 'Wait additional {} seconds'
+        log(msg.format((iterations * sleeptime) - (probe * sleeptime)))
         # we check every 5 seconds, just to avoid flooding the journal
         time.sleep(5)
     return False
